@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,6 +7,9 @@ public class Enemy : LivingEntity {
 
     public enum State { Idle, Chasing, Attacking };
     State currentState;
+
+    Material skinMaterial;
+    Color originalColor;
 
 	NavMeshAgent pathfinder;
 	Transform target;
@@ -30,6 +32,9 @@ public class Enemy : LivingEntity {
         myCollisionRadius = GetComponent<CapsuleCollider>().radius;
         targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
 
+        skinMaterial = GetComponent<Renderer>().material;
+        originalColor = skinMaterial.color;
+
         StartCoroutine( UpdatePath() );
 	}
 	
@@ -39,7 +44,7 @@ public class Enemy : LivingEntity {
         {
             nextAttackTime = Time.time + timeBetweenAttacks;
             float sqDistToTarget = (transform.position - target.position).sqrMagnitude;
-            if(sqDistToTarget <= Mathf.Pow(attackDistanceThreshold, 2) )
+            if(sqDistToTarget <= Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2) )
             {
                 StartCoroutine( Attack() );
             }
@@ -52,11 +57,13 @@ public class Enemy : LivingEntity {
         pathfinder.enabled = false;
 
         Vector3 currentPosition = transform.position;
-        Vector3 targetPosition = target.position;
+        Vector3 dirToTarget = (target.position - transform.position).normalized;
+        Vector3 targetPosition = target.position - dirToTarget * targetCollisionRadius;
 
         float attackSpeed = 3;
         float percent = 0;
 
+        skinMaterial.color = Color.red;
         while (percent <= 1)
         {
             percent += Time.deltaTime * attackSpeed;
@@ -65,6 +72,7 @@ public class Enemy : LivingEntity {
 
             yield return null;
         }
+        skinMaterial.color = originalColor;
 
         currentState = State.Chasing;
         pathfinder.enabled = true;
@@ -78,7 +86,8 @@ public class Enemy : LivingEntity {
         {
             if(currentState == State.Chasing)
             {
-                Vector3 targetPosition = new Vector3(target.position.x, 0, target.position.z);
+                Vector3 dirToTarget = (target.position - transform.position).normalized;
+                Vector3 targetPosition = target.position - dirToTarget * (targetCollisionRadius + myCollisionRadius + attackDistanceThreshold/2);
                 if (!dead)
                 {
                     pathfinder.SetDestination(targetPosition);
