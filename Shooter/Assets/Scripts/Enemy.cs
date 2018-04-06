@@ -67,7 +67,7 @@ public class Enemy : LivingEntity {
         while (percent <= 1)
         {
             percent += Time.deltaTime * attackSpeed;
-            float interpolation = 4 * ( Mathf.Pow(percent, 2) + percent );
+            float interpolation = 4 * ( -Mathf.Pow(percent, 2) + percent );
             transform.position = Vector3.Lerp(currentPosition, targetPosition, interpolation);
 
             yield return null;
