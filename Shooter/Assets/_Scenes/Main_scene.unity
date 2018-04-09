@@ -252,7 +252,7 @@ MonoBehaviour:
   waves:
   - enemyCount: 5
     timeBetweenSpawns: 1
-  - enemyCount: 10
+  - enemyCount: 5
     timeBetweenSpawns: 0.5
   enemy: {fileID: 114144088391997338, guid: edb1f390a62888840975cb72df743618, type: 2}
 --- !u!4 &460862284
@@ -562,7 +562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f1906fd40185e645b997b2f5ea2a1c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingHealth: 10
+  startingHealth: 5
   moveSpeed: 5
 --- !u!23 &1776722296
 MeshRenderer:
